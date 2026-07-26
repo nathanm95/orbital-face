@@ -1,0 +1,27 @@
+{
+  "name": "orbital-face",
+  "author": "Nathan Marchant",
+  "version": "1.0.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Orbital",
+    "uuid": "26f5371c-f858-4734-8770-3149b8ce77cd",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "aplite",
+      "basalt",
+      "chalk",
+      "diorite",
+      "emery",
+      "flint",
+      "gabbro"
+    ],
+    "watchapp": {
+      "watchface": true
+    },
+    "messageKeys": []
+  }
+}
