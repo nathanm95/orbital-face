@@ -55,6 +55,18 @@ pebble install --phone <ip>
 Settings are reachable from the Pebble phone app, or in the emulator with
 `pebble emu-app-config`.
 
+## Releasing
+
+`pebble build` writes `build/orbital-face.pbw`, which is the single file the
+appstore wants — it carries the binaries for all seven platforms plus the JS.
+Bump `version` in `package.json` before building; the appstore rejects a
+re-upload of a version it already has.
+
+> **Version 2.0.0 has not been uploaded to the appstore yet.** Everything
+> published so far is 1.0.0, which is the build that showed a frozen, made-up
+> sky (see the note on `astro.c` below). Uploading 2.0.0 is the outstanding
+> job on this repo.
+
 ## Notes for anyone working on this
 
 **The physics is fussier than it looks.** Three things in `src/c/physics.c`
