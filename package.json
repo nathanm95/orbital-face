@@ -1,10 +1,14 @@
 {
   "name": "orbital-face",
   "author": "Nathan Marchant",
-  "version": "1.0.0",
-  "keywords": ["pebble-app"],
+  "version": "2.0.0",
+  "keywords": [
+    "pebble-app"
+  ],
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "@rebble/clay": "^1.1.0"
+  },
   "pebble": {
     "displayName": "Orbital",
     "uuid": "26f5371c-f858-4734-8770-3149b8ce77cd",
@@ -22,6 +26,41 @@
     "watchapp": {
       "watchface": true
     },
-    "messageKeys": []
+    "capabilities": [
+      "configurable",
+      "health"
+    ],
+    "messageKeys": [
+      "TimeFormat",
+      "LeadingZero",
+      "TimePos",
+      "DateFormat",
+      "BatteryStyle",
+      "BatteryLowPct",
+      "ShowBT",
+      "VibeBT",
+      "ShowSteps",
+      "ColBG",
+      "ColTime",
+      "ColSun",
+      "ColOrbit",
+      "ColInfo",
+      "SunAutoTint",
+      "ShowOrbits",
+      "StarDensity",
+      "ShowTrails",
+      "TrailLength",
+      "ShowMoon",
+      "HighlightEarth",
+      "OuterPlanets",
+      "PlanetSize",
+      "PhysicsEnabled",
+      "FlingStrength",
+      "GravityStrength",
+      "RecaptureSecs",
+      "NudgeMinute",
+      "IntroAnim",
+      "MinutePulse"
+    ]
   }
 }
