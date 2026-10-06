@@ -80,6 +80,17 @@ static void battery_handler(BatteryChargeState state) {
   layer_mark_dirty(s_layer);
 }
 
+#ifdef ORBITAL_DEMO_FLING
+// Store recordings: one fling, a fixed time after launch, so the preview GIF
+// needs no tap injection (which goes through pypkjs) and starts from a
+// settled sky.
+static void demo_fling_cb(void *ctx) {
+  physics_fling(1000, -400);
+  kick_animation();
+  layer_mark_dirty(s_layer);
+}
+#endif
+
 static void connection_handler(bool connected) {
   if (!connected && g_settings.vibe_bt) vibes_double_pulse();
   layer_mark_dirty(s_layer);
@@ -131,6 +142,9 @@ static void window_load(Window *window) {
   // the physics reachable from a plain screendump.
   physics_fling(1000, -400);
   kick_animation();
+#endif
+#ifdef ORBITAL_DEMO_FLING
+  app_timer_register(ORBITAL_DEMO_FLING * 1000, demo_fling_cb, NULL);
 #endif
 }
 

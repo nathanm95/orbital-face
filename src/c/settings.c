@@ -49,9 +49,54 @@ static void settings_defaults(void) {
   };
 }
 
+#ifdef ORBITAL_SHOW_TIME
+// Store screenshots. Each preset shows off a different corner of the settings.
+// Black-and-white watches only get the layout changes, because every colour
+// collapses to black or white there anyway.
+static void store_preset(void) {
+#ifdef ORBITAL_DEMO_FLING
+  g_settings.recapture_secs = 9;   // so the preview GIF holds a whole fling and return
+#endif
+#if ORBITAL_PRESET == 1
+  // "Nebula": navy and ice, clock on top, dense stars, large planets.
+  g_settings.time_pos      = TIMEPOS_TOP;
+  g_settings.date_format   = DATE_DAY_MON;
+  g_settings.battery_style = BATT_PERCENT;
+  g_settings.star_density  = 3;
+  g_settings.planet_size   = 2;
+#ifdef PBL_COLOR
+  g_settings.col_bg        = GColorOxfordBlue;
+  g_settings.col_time      = GColorCeleste;
+  g_settings.col_orbit     = GColorCobaltBlue;
+  g_settings.col_info      = GColorPictonBlue;
+  g_settings.sun_auto_tint = false;
+  g_settings.col_sun       = GColorChromeYellow;
+#endif
+#elif ORBITAL_PRESET == 2
+  // "Ember": no orbit paths, inner six planets, battery as an edge ring.
+  g_settings.show_orbits   = false;
+  g_settings.outer_planets = false;
+  g_settings.star_density  = 1;
+  g_settings.battery_style = BATT_ARC;
+  g_settings.date_format   = DATE_OFF;
+#ifdef PBL_COLOR
+  g_settings.col_time      = GColorChromeYellow;
+  g_settings.col_info      = GColorRajah;
+  g_settings.sun_auto_tint = false;
+  g_settings.col_sun       = GColorOrange;
+#endif
+#endif
+}
+#endif
+
 void settings_init(void) {
   settings_defaults();
 
+#ifdef ORBITAL_SHOW_TIME
+  // Store builds start from known settings, whatever an earlier test left in
+  // the emulator's flash.
+  store_preset();
+#else
   if (persist_exists(SETTINGS_KEY)) {
     Settings stored;
     int read = persist_read_data(SETTINGS_KEY, &stored, sizeof(stored));
@@ -61,6 +106,7 @@ void settings_init(void) {
     // Any mismatch (older version, different size) falls through to defaults,
     // which are then re-saved below so the next launch is a clean hit.
   }
+#endif
 }
 
 void settings_save(void) {

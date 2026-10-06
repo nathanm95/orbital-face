@@ -270,18 +270,46 @@ static void draw_text_outlined(GContext *ctx, const char *text, GFont font,
                      GTextAlignmentCenter, NULL);
 }
 
+#ifndef PBL_ROUND
+// The first `len` pixels of the screen's edge, clockwise from the top centre.
+static void draw_edge_run(GContext *ctx, GRect b, int32_t len) {
+  int16_t l = 1, t = 1, r = b.size.w - 2, btm = b.size.h - 2, mid = b.size.w / 2;
+  const GPoint pts[6] = {
+    { mid, t }, { r, t }, { r, btm }, { l, btm }, { l, t }, { mid, t },
+  };
+  for (int i = 0; i < 5 && len > 0; i++) {
+    GPoint a = pts[i], z = pts[i + 1];
+    int32_t seg = abs(z.x - a.x) + abs(z.y - a.y);
+    if (len < seg) {
+      z.x = a.x + (z.x - a.x) * len / seg;
+      z.y = a.y + (z.y - a.y) * len / seg;
+    }
+    graphics_draw_line(ctx, a, z);
+    len -= seg;
+  }
+}
+#endif
+
 static void draw_battery_arc(GContext *ctx, GRect b) {
   BatteryChargeState batt = battery_state_service_peek();
-  GRect ring = grect_inset(b, GEdgeInsets(1));
-  int32_t end = TRIG_MAX_ANGLE * batt.charge_percent / 100;
+  GColor fill = batt.charge_percent <= g_settings.battery_low_pct ? GColorRed : g_settings.col_info;
 
   graphics_context_set_stroke_color(ctx, fade_color(g_settings.col_info, 1, 3));
   graphics_context_set_stroke_width(ctx, 3);
+#ifdef PBL_ROUND
+  GRect ring = grect_inset(b, GEdgeInsets(1));
   graphics_draw_arc(ctx, ring, GOvalScaleModeFitCircle, 0, TRIG_MAX_ANGLE);
-
-  graphics_context_set_stroke_color(ctx,
-    batt.charge_percent <= g_settings.battery_low_pct ? GColorRed : g_settings.col_info);
-  graphics_draw_arc(ctx, ring, GOvalScaleModeFitCircle, 0, end);
+  graphics_context_set_stroke_color(ctx, fill);
+  graphics_draw_arc(ctx, ring, GOvalScaleModeFitCircle, 0,
+                    TRIG_MAX_ANGLE * batt.charge_percent / 100);
+#else
+  // A circle fitted into a rectangle runs straight through the clock, so on
+  // rectangular screens the ring follows the screen edge instead.
+  int32_t perimeter = 2 * (b.size.w - 3) + 2 * (b.size.h - 3);
+  draw_edge_run(ctx, b, perimeter);
+  graphics_context_set_stroke_color(ctx, fill);
+  draw_edge_run(ctx, b, perimeter * batt.charge_percent / 100);
+#endif
   graphics_context_set_stroke_width(ctx, 1);
 }
 
@@ -298,6 +326,14 @@ void render_scene(Layer *layer, GContext *ctx) {
 
   time_t now = time(NULL);
   struct tm *lt = localtime(&now);
+#ifdef ORBITAL_SHOW_TIME
+  // Store screenshots: the emulator follows the host clock and can't be set,
+  // so pin the clock, and the Sun's time-of-day tint with it, to 10:08.
+  struct tm pinned = *lt;
+  pinned.tm_hour = ORBITAL_SHOW_TIME / 100;
+  pinned.tm_min  = ORBITAL_SHOW_TIME % 100;
+  lt = &pinned;
+#endif
   if (s_text_dirty) rebuild_text(lt);
 
   GColor tint = g_settings.sun_auto_tint ? render_sun_tint(lt->tm_hour) : g_settings.col_sun;
@@ -366,7 +402,7 @@ void render_scene(Layer *layer, GContext *ctx) {
 
   int block_y;
   switch (g_settings.time_pos) {
-    case TIMEPOS_TOP:    block_y = 2; break;
+    case TIMEPOS_TOP:    block_y = PBL_IF_ROUND_ELSE(10, 2); break;
     case TIMEPOS_CENTRE: block_y = g_scene.centre.y - block_h / 2; break;
     default:             block_y = b.size.h - block_h - PBL_IF_ROUND_ELSE(10, 2); break;
   }

@@ -34,8 +34,13 @@ def build(ctx):
         ctx.env = ctx.all_envs[platform]
         ctx.set_group(ctx.env.PLATFORM_NAME)
         app_elf = '{}/pebble-app.elf'.format(ctx.env.BUILD_DIR)
-        if os.environ.get('ORBITAL_DEBUG'):
-            ctx.env.append_value('DEFINES', 'ORBITAL_DEBUG=1')
+        # Test/store-only switches, passed through as C defines (see README):
+        # ORBITAL_DEBUG=1, ORBITAL_SHOW_TIME=1008, ORBITAL_PRESET=n,
+        # ORBITAL_DEMO_FLING=<seconds after launch>.
+        for key in ('ORBITAL_DEBUG', 'ORBITAL_SHOW_TIME', 'ORBITAL_PRESET',
+                    'ORBITAL_DEMO_FLING'):
+            if os.environ.get(key):
+                ctx.env.append_value('DEFINES', '%s=%d' % (key, int(os.environ[key])))
         ctx.pbl_build(source=ctx.path.ant_glob('src/c/**/*.c'), target=app_elf, bin_type='app')
 
         if build_worker:
