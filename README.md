@@ -1,4 +1,4 @@
-# orbital-face
+# Orbital
 
 A Pebble watchface showing a live orrery: the Sun and the eight planets at
 their real heliocentric positions right now, on a starfield, with the time
@@ -8,8 +8,17 @@ inverse-square gravity, swing round the Sun, and glide back to the truth.
 Runs on every Pebble: aplite, basalt, chalk, diorite, emery (Time 2), flint
 and gabbro (Round 2).
 
+On the Rebble appstore as
+[Orbital](https://apps.repebble.com/orbital_ca95ffb257bb4ae484d2de7f) (v2.0.0).
+
 ![Round 2](store/gabbro_1_preview.gif) ![Time 2](store/emery_1_preview.gif)
 ![Time Round](store/chalk_1_preview.gif) ![Pebble 2](store/diorite_1_preview.gif)
+
+<p>
+  <img src="store/gabbro_3_fling.png" width="160" alt="The planets flung loose, with trails">
+  <img src="store/emery_4_nebula.png" width="140" alt="Nebula: navy and ice, clock on top">
+  <img src="store/gabbro_5_ember.png" width="160" alt="Ember: inner six planets and a battery ring">
+</p>
 
 ## What it does
 
@@ -207,9 +216,8 @@ sometimes keeps the previous face through an install), and records it.
 
 ## Releasing
 
-> **Version 2.0.0 has not been uploaded to the appstore yet.** Everything
-> published so far is 1.0.0, which is the build that showed a frozen, made-up
-> sky (see the astronomy note above).
+Version 2.0.0 has been live on the store since 2026-10-06. It replaced 1.0.0,
+the build that showed a frozen, made-up sky (see the astronomy note above).
 
 Orbital already exists on the store, so `pebble publish` adds a release to the
 existing app (matched by UUID) rather than creating one. Read
@@ -218,7 +226,7 @@ existing app (matched by UUID) rather than creating one. Read
 - **The release goes live immediately.** The existing-app path sends
   `isPublished: true` whatever you pass.
 - **Screenshots are added, not replaced** (`replaceScreenshots: false`), so
-  remove the 1.0.0 frozen-sky shots on the developer dashboard afterwards.
+  remove the previous release's shots on the developer dashboard afterwards.
 - `--description`, `--icon-*`, `--name` and `--category` only apply when
   creating a new app. Update the description and icons on the dashboard, from
   `store/listing.md` and `store/icon_*.png`.
